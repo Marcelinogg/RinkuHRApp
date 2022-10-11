@@ -7,14 +7,14 @@ namespace RinkuHRApp.Controllers;
 
 public class EmployeeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
+    private readonly ILogger<EmployeeController> _logger;
     private readonly IEmployeeService _employeeService;
     private readonly IPositionService _positionService;
     private readonly IPayrollService _payrollService;
     private readonly int PAYROLL;
 
     public EmployeeController(
-        ILogger<HomeController> logger,
+        ILogger<EmployeeController> logger,
         IEmployeeService employeeService,
         IPositionService positionService,
         IPayrollService payrollService

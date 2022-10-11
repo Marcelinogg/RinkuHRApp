@@ -7,7 +7,7 @@ namespace RinkuHRApp.Controllers
 {
     public class TransactionController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<TransactionController> _logger;
         private readonly IPayrollService _payrollService;
         private readonly IPeriodService _periodService;
         private readonly IEmployeeService _employeeService;
@@ -15,7 +15,7 @@ namespace RinkuHRApp.Controllers
         private readonly int PAYROLL;
 
         public TransactionController(
-            ILogger<HomeController> logger,
+            ILogger<TransactionController> logger,
             IPayrollService payrollService,
             IPeriodService periodService,
             IEmployeeService employeeService,

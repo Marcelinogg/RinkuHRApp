@@ -1,0 +1,104 @@
+@model PayrollCalculationViewModel
+
+<div class="container">
+    @if (TempData["Done"] != null)
+    {
+        <div class="alert alert-success" role="alert">Registros procesados @TempData["RowsAffected"]</div>
+    }
+
+    <div class="row">
+        <div class="card">
+            <div class="card-body">
+                <div class="col-sm-12">
+                     <h5>PROCESAR NÓMINA</h5>
+                     <form method="post" asp-action="Index" class="row g-3">
+                        <div asp-validation-summary="All"></div>
+
+                        <div class="form-group col-md-3">
+                            <label asp-for="PayrollId">Nómina</label>
+                            <select class="form-select mb-3" asp-for="PayrollId"
+                                asp-items="@(new SelectList(ViewBag.Payrolls, "Id", "Name"))">
+                            </select>
+                            <span asp-validation-for="PayrollId" class=" alert-danger"></span>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label asp-for="PeriodId">Período</label>
+                            <select class="form-select mb-3" asp-for="PeriodId"
+                                asp-items="@(new SelectList(ViewBag.Periods, "Id", "Name"))">
+                            </select>
+                            <span asp-validation-for="PeriodId" class=" alert-danger"></span>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label asp-for="EmployeeId">Empleado</label>
+                            <select class="form-select mb-3" asp-for="EmployeeId"
+                                asp-items="@(new SelectList(ViewBag.Employees, "Id", "FullName"))">
+                                <option value="">-- Todos --</option>
+                            </select>
+                            <span asp-validation-for="EmployeeId" class=" alert-danger"></span>
+                        </div>
+                        <div class="col-12 text-center">
+                        <button type="submit" class="btn btn-lg btn-warning"><i
+                                class="bi bi-file-plus-fill"></i>Procesar</button>
+                    </div>
+                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-sm-12">
+            @{
+                List<PayrollConceptViewModel> payrollConcepts = (List<PayrollConceptViewModel>)ViewBag.PayrollConcepts;
+                List<int> employeeIds = payrollConcepts.Select(x=> x.EmployeeId.GetValueOrDefault())
+                                                       .Distinct()
+                                                       .ToList();
+                
+                foreach(int employeeId in employeeIds)
+                {
+<table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">ID Concepto</th>
+                    <th scope="col">Concepto</th>
+                    <th scope="col">$</th>
+                    <th scope="col">Detalle</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in payrollConcepts.Where(x=> x.EmployeeId == employeeId))
+                {
+                    <tr>
+                        <td width="5%">
+                            @item.EmployeeId
+                        </td>
+                        <td width="30%">
+                            @item.EmployeeFullName
+                        </td>
+                        <td width="5%">
+                            @item.ConceptId
+                        </td>
+                        <td width="20%">
+                            @item.ConceptName
+                        </td>
+                        <td width="5%">
+                            @item.Amount
+                        </td>
+                        <td width="20%">
+                            @item.TypeConcept
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+                }
+            }
+        </div>
+    </div>
+</div>

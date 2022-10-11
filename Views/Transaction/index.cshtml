@@ -10,7 +10,7 @@
         <div class="card">
             <div class="card-body">
                 <div class="col-sm-12">
-                    <h5>CAPTURA MOVIMIENTO - BONO X ENTREGA</h5>
+                    <h5>CAPTURA MOVIMIENTO - PAGO X ENTREGA</h5>
                     <form method="post" asp-action="@ViewBag.Action" class="row g-3">
                         <div asp-validation-summary="All"></div>
 
@@ -79,12 +79,12 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
+                        <th scope="col"># ID</th>
                         <th scope="col">Nombre</th>
                         <th scope="col">ID Concepto</th>
                         <th scope="col">Concepto</th>
                         <th scope="col">Entregas</th>
                         <th scope="col">Pago x hora</th>
-                        <th scope="col">Secuencia</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -93,7 +93,10 @@
                     @foreach (var item in (IEnumerable<TransactionViewModel>)ViewBag.Transactions)
                     {
                         <tr>
-                            <td width="10%">
+                            <td width="5%">
+                                @item.Sequence
+                            </td>
+                            <td width="5%">
                                 @item.EmployeeId
                             </td>
                             <td width="30%">
@@ -102,7 +105,7 @@
                             <td width="5%">
                                 @item.ConceptId
                             </td>
-                            <td width="5%">
+                            <td width="20%">
                                 @item.Concept
                             </td>
                             <td width="5%">
@@ -110,9 +113,6 @@
                             </td>
                             <td width="5%">
                                 @item.Amount
-                            </td>
-                            <td width="5%">
-                                @item.Sequence
                             </td>
                             <td>
                                 <div role="group" class="w-60 btn-group">

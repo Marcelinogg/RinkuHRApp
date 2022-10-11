@@ -58,7 +58,7 @@ public class EmployeeService : IEmployeeService
     {  
         // Set the ID to the employee (the minimum ID si 1000001)
         int maxId = _hrContext.Employees.Max(x=> (int?)x.Id).GetValueOrDefault() + 1;
-        model.Id = maxId == 0 ? 10000001 : maxId;
+        model.Id = maxId == 1 ? 10000001 : maxId;
 
         Save(model);
     }

@@ -9,6 +9,7 @@ namespace RinkuHRApp.Data
         public int PeriodId { get; set; }
         public int ConceptId { get; set; }
         public int EmployeeId { get; set; }
+        public int Sequence { get; set; }
         public int Times { get; set; }
         public decimal Amount { get; set; }
         public string UserId { get; set; }

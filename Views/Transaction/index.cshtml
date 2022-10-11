@@ -14,19 +14,27 @@
                     <form method="post" asp-action="@ViewBag.Action" class="row g-3">
                         <div asp-validation-summary="All"></div>
 
-                        <div class="form-group col-md-4">
-                            <label asp-for="PeriodId">Periodo</label>
-                            <select class="form-control mb-3" asp-for="PeriodId"
+                        <div class="form-group col-md-3">
+                            <label asp-for="PayrollId">Nómina</label>
+                            <select class="form-select mb-3" asp-for="PayrollId"
+                                asp-items="@(new SelectList(ViewBag.Payrolls, "Id", "Name"))">
+                            </select>
+                            <span asp-validation-for="PayrollId" class=" alert-danger"></span>
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label asp-for="PeriodId">Período</label>
+                            <select class="form-select mb-3" asp-for="PeriodId"
                                 asp-items="@(new SelectList(ViewBag.Periods, "Id", "Name"))">
-                                <option value="">-- Selecciona un Periodo --</option>
                             </select>
                             <span asp-validation-for="PeriodId" class=" alert-danger"></span>
                         </div>
 
-                        <div class="form-group col-md-4">
+                        <div class="form-group col-md-6">
                             <label for="EmployeesSelect">Empleados</label>
-                            <select id="EmployeesSelect" class=" form-control mb-3"
-                                asp-items="@(new SelectList(ViewBag.Employees, "Id", "Name"))" onchange="setValues(event)" data-object="@ViewBag.EmployeesStr">
+                            <select id="EmployeesSelect" class="form-select mb-3"
+                                asp-items="@(new SelectList(ViewBag.Employees, "Id", "FullName"))"
+                                onchange="setValues(event)" data-employeeslist="@ViewBag.EmployeesStr">
                                 <option value="">-- Selecciona un empleado --</option>
                             </select>
                         </div>
@@ -34,13 +42,10 @@
                             <label asp-for="EmployeeId">ID</label>
                             <input type="text" class="form-control mb-3" asp-for="EmployeeId" readonly>
                         </div>
-                        <div class="form-group col-md-2">
+                        <div class="form-group col-md-6">
                             <label asp-for="EmployeeFullName">Nombre</label>
                             <input type="text" class="form-control mb-3" asp-for="EmployeeFullName" readonly>
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label asp-for="Payroll">Nómina</label>
-                            <input type="text" class="form-control mb-3" asp-for="Payroll" readonly>
+                            <span asp-validation-for="EmployeeId" class=" alert-danger"></span>
                         </div>
                         <div class="form-group col-md-2">
                             <label asp-for="Amount">Pago x hora</label>
@@ -55,7 +60,8 @@
                             <span asp-validation-for="Times" class=" alert-danger"></span>
                         </div>
 
-                        <input type="hidden" asp-for="PayrollId">
+                         <input type="hidden" asp-for="ConceptId">
+                         <input type="hidden" asp-for="Sequence">
 
                         <div class="col-12 text-center">
                             <button type="submit" class="btn btn-lg btn-primary"><i
@@ -78,35 +84,42 @@
                         <th scope="col">Concepto</th>
                         <th scope="col">Entregas</th>
                         <th scope="col">Pago x hora</th>
+                        <th scope="col">Secuencia</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
 
-                    @foreach (var item in (IEnumerable<EmployeeViewModel>)ViewBag.Employees)
+                    @foreach (var item in (IEnumerable<TransactionViewModel>)ViewBag.Transactions)
                     {
                         <tr>
                             <td width="10%">
-                                @item.Id
+                                @item.EmployeeId
                             </td>
                             <td width="30%">
-                                @item.FullName
+                                @item.EmployeeFullName
                             </td>
                             <td width="5%">
-                                @item.SalaryPerHour
+                                @item.ConceptId
                             </td>
                             <td width="5%">
-                                @item.HoursPerDay
+                                @item.Concept
                             </td>
                             <td width="5%">
-                                @item.DaysPerWeek
+                                @item.Times
                             </td>
                             <td width="5%">
-                                @item.Status
+                                @item.Amount
+                            </td>
+                            <td width="5%">
+                                @item.Sequence
                             </td>
                             <td>
                                 <div role="group" class="w-60 btn-group">
-                                    <a asp-controller="Employee" asp-action="SearchEmployee" asp-route-id="@item.Id"
+                                    <a asp-controller="Transaction" asp-action="SearchTransaction"
+                                    asp-route-payrollId="@item.PayrollId" asp-route-periodId="@item.PeriodId"
+                                    asp-route-conceptId="@item.ConceptId" asp-route-employeeId="@item.EmployeeId"
+                                    asp-route-sequence="@item.Sequence"
                                     class=" btn btn-sm btn-success"><i
                                         class="bi bi-pencil-square"></i>Seleccionar</a>&nbsp;
                                 </div>
@@ -119,13 +132,14 @@
     </div>
 </div>
 <script>
-    function setValues(event) {
-        var employeesList = JSON.parse(event.target.dataset.EmployeesStr);
-        var employee = employeesList.find(x=> x.Id = event.target.value);
+    function setValues(event) {        
+        var employeeslist = JSON.parse(event.target.dataset.employeeslist);
+        var employee = employeeslist.find(x => x.Id == String(event.target.value));
 
         document.querySelector("#EmployeeId").value = employee.Id;
         document.querySelector("#EmployeeFullName").value = employee.FullName;
-        document.querySelector("#PayrollId").value = employee.PayrollId;
-        document.querySelector("#Payroll").value = employee.Payroll;
+        document.querySelector("#Amount").value = "5.00";
+        document.querySelector("#Times").value = 0;
+        document.querySelector("#Sequence").value = 0;
     }
-</script> 
+</script>

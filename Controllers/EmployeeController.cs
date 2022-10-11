@@ -30,9 +30,7 @@ public class EmployeeController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        ViewBag.Action = "NewEmployee";
         GetCatalogsToView();
-
         return View(new EmployeeViewModel(){
             SalaryPerHour = 30,
             HoursPerDay = 8,
@@ -45,8 +43,7 @@ public class EmployeeController : Controller
     public IActionResult SearchEmployee(int id)
     {
         EmployeeViewModel employee = _employeeService.GetOne(id);
-        ViewBag.Action = "EditEmployee";
-        GetCatalogsToView();
+        GetCatalogsToView("EditEmployee");
 
         return View("Index", employee);
     }
@@ -74,15 +71,16 @@ public class EmployeeController : Controller
             
             return RedirectToAction("Index");
         }
-
-        GetCatalogsToView();
+        
+        GetCatalogsToView("EditEmployee");
         return View("Index", model);
     }
-
-    private void GetCatalogsToView() {
+    
+    private void GetCatalogsToView(string action = "NewEmployee") {
         ViewBag.Payrolls = _payrollService.GetAll();
         ViewBag.Positions = _positionService.GetAll();
         ViewBag.Employees = _employeeService.GetAll(PAYROLL);
+        ViewBag.Action = action;
     }
 
 

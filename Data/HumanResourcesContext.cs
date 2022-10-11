@@ -137,7 +137,7 @@ namespace RinkuHRApp.Data
 
             modelBuilder.Entity<Transaction>(entity =>
             {
-                entity.HasKey(e => new { e.PayrollId, e.PeriodId, e.ConceptId, e.EmployeeId })
+                entity.HasKey(e => new { e.PayrollId, e.PeriodId, e.ConceptId, e.EmployeeId, e.Sequence })
                     .HasName("PK_PayrollTransactions");
 
                 entity.ToTable("Transactions", "Payroll");

@@ -19,7 +19,7 @@ namespace RinkuHRApp.Controllers
             IPayrollService payrollService,
             IPeriodService periodService,
             IEmployeeService employeeService,
-            TransactionService transactionService
+            ITransactionService transactionService
         )
         {
             _logger = logger;
@@ -33,28 +33,19 @@ namespace RinkuHRApp.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            // GetCatalogsToView();
-            ViewBag.Periods = _periodService.GetAllActives(PAYROLL);
-            IEnumerable<EmployeeViewModel> employees = _employeeService.GetAllActives(PAYROLL);
-            ViewBag.Employees = employees;
-            ViewBag.EmployeeStr = _employeeService.SerializeAllActives(employees);
-            ViewBag.Action = "NewTransaction";
-
+            GetCatalogsToView();
             return View(new TransactionViewModel(){
-                ConceptId = 2
+                ConceptId = 2,
+                Amount = 5.00M
             });
         }
 
         [HttpGet]
-        public IActionResult SearchTransaction(int payrollId, int peridoId, int conceptId, int employeeId)
+        public IActionResult SearchTransaction(int payrollId, int periodId, int conceptId, int employeeId, int sequence)
         {
-            ViewBag.Periods = _periodService.GetAllActives(PAYROLL);
-            IEnumerable<EmployeeViewModel> employees = _employeeService.GetAllActives(PAYROLL);
-            ViewBag.Employees = employees;
-            ViewBag.EmployeeStr = _employeeService.SerializeAllActives(employees);
-            TransactionViewModel transaction = _transactionService.GetOne(payrollId, peridoId, conceptId, employeeId);
-            ViewBag.Action = "EditTransaction";
-            // GetCatalogsToView();
+            TransactionViewModel transaction = _transactionService.GetOne(payrollId, periodId, conceptId, employeeId, sequence);
+            GetCatalogsToView("EditTransaction");
+            
             return View("Index", transaction);
         }
 
@@ -68,11 +59,7 @@ namespace RinkuHRApp.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.Periods = _periodService.GetAllActives(PAYROLL);
-            IEnumerable<EmployeeViewModel> employees = _employeeService.GetAllActives(PAYROLL);
-            ViewBag.Employees = employees;
-            ViewBag.EmployeeStr = _employeeService.SerializeAllActives(employees);
-            // GetCatalogsToView();
+            GetCatalogsToView();
             return View("Index", model);
         }
 
@@ -86,12 +73,20 @@ namespace RinkuHRApp.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.Periods = _periodService.GetAllActives(PAYROLL);
+            GetCatalogsToView("EditTransaction");
+            return View("Index", model);
+        }
+
+        private void GetCatalogsToView(string action =  "NewTransaction")
+        {
+            ViewBag.Payrolls = _payrollService.GetAll();
+            IEnumerable<PeriodViewModel> periods = _periodService.GetAllActives(PAYROLL);
+            ViewBag.Periods = periods;
             IEnumerable<EmployeeViewModel> employees = _employeeService.GetAllActives(PAYROLL);
             ViewBag.Employees = employees;
-            ViewBag.EmployeeStr = _employeeService.SerializeAllActives(employees);
-            // GetCatalogsToView();
-            return View("Index", model);
+            ViewBag.EmployeesStr = _employeeService.SerializeAllActives(employees);
+            ViewBag.Transactions = _transactionService.GetAllActives(PAYROLL, periods.First().Id);
+            ViewBag.Action = action;
         }
 
 

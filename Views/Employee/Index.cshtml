@@ -27,14 +27,14 @@
                     </div>
                     <div class="form-group col-md-4">
                         <label asp-for="PayrollId">Nómina</label>
-                        <select class="form-control mb-3" asp-for="PayrollId"
+                        <select class="form-select mb-3" asp-for="PayrollId"
                             asp-items="@(new SelectList(ViewBag.Payrolls, "Id", "Name"))">
                         </select>
                         <span asp-validation-for="PayrollId" class=" alert-danger"></span>
                     </div>
                     <div class="form-group col-md-4">
                         <label asp-for="PositionId">Puesto</label>
-                        <select class="form-control mb-3" asp-for="PositionId"
+                        <select class="form-select mb-3" asp-for="PositionId"
                             asp-items="@(new SelectList(ViewBag.Positions, "Id", "Name"))">
                             <option value="">-- Selecciona un puesto --</option>
                         </select>

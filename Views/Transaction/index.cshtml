@@ -1,0 +1,131 @@
+@model TransactionViewModel
+
+<div class="container">
+    @if (TempData["Done"] != null)
+    {
+        <div class="alert alert-success" role="alert"> @TempData["Done"]</div>
+    }
+
+    <div class="row">
+        <div class="card">
+            <div class="card-body">
+                <div class="col-sm-12">
+                    <h5>CAPTURA MOVIMIENTO - BONO X ENTREGA</h5>
+                    <form method="post" asp-action="@ViewBag.Action" class="row g-3">
+                        <div asp-validation-summary="All"></div>
+
+                        <div class="form-group col-md-4">
+                            <label asp-for="PeriodId">Periodo</label>
+                            <select class="form-control mb-3" asp-for="PeriodId"
+                                asp-items="@(new SelectList(ViewBag.Periods, "Id", "Name"))">
+                                <option value="">-- Selecciona un Periodo --</option>
+                            </select>
+                            <span asp-validation-for="PeriodId" class=" alert-danger"></span>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label for="EmployeesSelect">Empleados</label>
+                            <select id="EmployeesSelect" class=" form-control mb-3"
+                                asp-items="@(new SelectList(ViewBag.Employees, "Id", "Name"))" onchange="setValues(event)" data-object="@ViewBag.EmployeesStr">
+                                <option value="">-- Selecciona un empleado --</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label asp-for="EmployeeId">ID</label>
+                            <input type="text" class="form-control mb-3" asp-for="EmployeeId" readonly>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label asp-for="EmployeeFullName">Nombre</label>
+                            <input type="text" class="form-control mb-3" asp-for="EmployeeFullName" readonly>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label asp-for="Payroll">Nómina</label>
+                            <input type="text" class="form-control mb-3" asp-for="Payroll" readonly>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label asp-for="Amount">Pago x hora</label>
+                            <input type="text" class="form-control mb-3" asp-for="Amount"
+                                placeholder="Ingresa la monto x hora">
+                            <span asp-validation-for="Amount" class=" alert-danger"></span>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label asp-for="Times">Cantidad de entregas</label>
+                            <input type="text" class="form-control mb-3" asp-for="Times"
+                                placeholder="Ingresa la cantidad de entregas">
+                            <span asp-validation-for="Times" class=" alert-danger"></span>
+                        </div>
+
+                        <input type="hidden" asp-for="PayrollId">
+
+                        <div class="col-12 text-center">
+                            <button type="submit" class="btn btn-lg btn-primary"><i
+                                    class="bi bi-file-plus-fill"></i>Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-sm-12">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">ID Concepto</th>
+                        <th scope="col">Concepto</th>
+                        <th scope="col">Entregas</th>
+                        <th scope="col">Pago x hora</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in (IEnumerable<EmployeeViewModel>)ViewBag.Employees)
+                    {
+                        <tr>
+                            <td width="10%">
+                                @item.Id
+                            </td>
+                            <td width="30%">
+                                @item.FullName
+                            </td>
+                            <td width="5%">
+                                @item.SalaryPerHour
+                            </td>
+                            <td width="5%">
+                                @item.HoursPerDay
+                            </td>
+                            <td width="5%">
+                                @item.DaysPerWeek
+                            </td>
+                            <td width="5%">
+                                @item.Status
+                            </td>
+                            <td>
+                                <div role="group" class="w-60 btn-group">
+                                    <a asp-controller="Employee" asp-action="SearchEmployee" asp-route-id="@item.Id"
+                                    class=" btn btn-sm btn-success"><i
+                                        class="bi bi-pencil-square"></i>Seleccionar</a>&nbsp;
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    function setValues(event) {
+        var employeesList = JSON.parse(event.target.dataset.EmployeesStr);
+        var employee = employeesList.find(x=> x.Id = event.target.value);
+
+        document.querySelector("#EmployeeId").value = employee.Id;
+        document.querySelector("#EmployeeFullName").value = employee.FullName;
+        document.querySelector("#PayrollId").value = employee.PayrollId;
+        document.querySelector("#Payroll").value = employee.Payroll;
+    }
+</script> 

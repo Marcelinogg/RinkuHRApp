@@ -5,6 +5,11 @@ namespace RinkuHRApp.Data
 {
     public partial class Employee
     {
+        public Employee()
+        {
+            Transactions = new HashSet<Transaction>();
+        }
+
         public int Id { get; set; }
         public string FullName { get; set; }
         public int PositionId { get; set; }
@@ -17,5 +22,6 @@ namespace RinkuHRApp.Data
         public virtual Payroll Payroll { get; set; }
         public virtual Position Position { get; set; }
         public virtual EmployeeStatus Status { get; set; }
+        public virtual ICollection<Transaction> Transactions { get; set; }
     }
 }

@@ -11,6 +11,7 @@ public class EmployeeController : Controller
     private readonly IEmployeeService _employeeService;
     private readonly IPositionService _positionService;
     private readonly IPayrollService _payrollService;
+    private readonly int PAYROLL;
 
     public EmployeeController(
         ILogger<HomeController> logger,
@@ -23,13 +24,14 @@ public class EmployeeController : Controller
         _employeeService = employeeService;
         _positionService = positionService;
         _payrollService = payrollService;
+        PAYROLL =  _payrollService.GetAll().First().Id;
     }
 
     [HttpGet]
     public IActionResult Index()
     {
+        ViewBag.Action = "NewEmployee";
         GetCatalogsToView();
-        ViewBag.Action = "EmployeeNew";
 
         return View(new EmployeeViewModel(){
             SalaryPerHour = 30,
@@ -42,19 +44,19 @@ public class EmployeeController : Controller
     [HttpGet]
     public IActionResult SearchEmployee(int id)
     {
-        GetCatalogsToView();
         EmployeeViewModel employee = _employeeService.GetOne(id);
-        ViewBag.Action = "EmployeeEdit";
+        ViewBag.Action = "EditEmployee";
+        GetCatalogsToView();
 
         return View("Index", employee);
     }
 
     [HttpPost]
-    public IActionResult EmployeeNew(EmployeeViewModel model)
+    public IActionResult NewEmployee(EmployeeViewModel model)
     {
         if(ModelState.IsValid) {
             _employeeService.AddNew(model);
-            TempData["Done"] = "Empleado agrega exitosamente";
+            TempData["Done"] = "Empleado agregado exitosamente";
 
             return RedirectToAction("Index");
         }
@@ -64,7 +66,7 @@ public class EmployeeController : Controller
     }
 
     [HttpPost]
-    public IActionResult EmployeeEdit(EmployeeViewModel model)
+    public IActionResult EditEmployee(EmployeeViewModel model)
     {
         if(ModelState.IsValid) {
             _employeeService.Edit(model);
@@ -73,14 +75,14 @@ public class EmployeeController : Controller
             return RedirectToAction("Index");
         }
 
+        GetCatalogsToView();
         return View("Index", model);
     }
 
     private void GetCatalogsToView() {
-        IEnumerable<PayrollViewModel> payrolls = _payrollService.GetAll();
-        ViewBag.Payrolls = payrolls;
+        ViewBag.Payrolls = _payrollService.GetAll();
         ViewBag.Positions = _positionService.GetAll();
-        ViewBag.Employees = _employeeService.GetAll(payrolls.First().Id);
+        ViewBag.Employees = _employeeService.GetAll(PAYROLL);
     }
 
 

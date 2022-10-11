@@ -19,6 +19,7 @@ public class EmployeeViewModel
     public int DaysPerWeek { get; set; }
     [Required]
     public int PayrollId { get; set; }
+    public string Payroll { get; set; }
     [Required]
     public bool StatusId { get; set; }
     public string Status { get; set; }

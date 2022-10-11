@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using RinkuHRApp.Data;
 using RinkuHRApp.Models;
@@ -16,6 +17,7 @@ public class EmployeeService : IEmployeeService
     private IEnumerable<EmployeeViewModel> GetData(int payrollId, bool onlyActive = false)
     {
         return _hrContext.Employees.Include(x=> x.Position)
+                                    .Include(x=> x.Payroll)
                                     .Where( x=> x.PayrollId == payrollId 
                                                 && ((onlyActive && x.StatusId == 1) || !onlyActive))
                                     .Select(x=> new EmployeeViewModel {
@@ -25,6 +27,8 @@ public class EmployeeService : IEmployeeService
                                         SalaryPerHour = x.SalaryPerHour,
                                         HoursPerDay = x.HoursPerDay,
                                         DaysPerWeek = x.DaysPerWeek,
+                                        PayrollId = x.PayrollId,
+                                        Payroll = x.Payroll.Name,
                                         Status = x.Status.Name
                                     })
                                     .ToList();
@@ -60,6 +64,11 @@ public class EmployeeService : IEmployeeService
     public void Edit(EmployeeViewModel model)
     {
          Save(model, false);
+    }
+
+    public string SerializeAllActives(IEnumerable<EmployeeViewModel> employees)
+    {
+        return JsonSerializer.Serialize(employees);
     }
 
     public IEnumerable<EmployeeViewModel> GetAllActives(int payrollId)

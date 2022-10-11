@@ -161,6 +161,12 @@ namespace RinkuHRApp.Data
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PayrollTransactions_PayrollConcepts");
 
+                entity.HasOne(d => d.Employee)
+                    .WithMany(p => p.Transactions)
+                    .HasForeignKey(d => d.EmployeeId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PayrollTransactions_Employees");
+
                 entity.HasOne(d => d.Payroll)
                     .WithMany(p => p.Transactions)
                     .HasForeignKey(d => d.PayrollId)

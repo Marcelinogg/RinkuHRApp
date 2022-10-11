@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+
 namespace RinkuHRApp.Data
 {
     public partial class Employee
@@ -15,5 +15,6 @@ namespace RinkuHRApp.Data
         public int StatusId { get; set; }
 
         public virtual Position Position { get; set; }
+        public virtual EmployeeStatus Status { get; set; }
     }
 }

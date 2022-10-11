@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace RinkuHRApp.Models;
 
 public class EmployeeViewModel
 {
-    [Required]
     public int Id { get; set; }
     [Required]
     public string FullName { get; set; }
@@ -20,5 +20,6 @@ public class EmployeeViewModel
     [Required]
     public int PayrollId { get; set; }
     [Required]
-    public int StatusId { get; set; }
+    public bool StatusId { get; set; }
+    public string Status { get; set; }
 }

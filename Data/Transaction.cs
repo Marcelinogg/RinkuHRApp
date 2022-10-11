@@ -15,6 +15,7 @@ namespace RinkuHRApp.Data
         public DateTime CreatedDate { get; set; }
         public int StatusId { get; set; }
 
+        public virtual Concept Concept { get; set; }
         public virtual Period P { get; set; }
     }
 }

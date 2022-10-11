@@ -45,10 +45,11 @@ public class TransactionService : ITransactionService
 
     public IEnumerable<TransactionViewModel> GetAll(int payrollId, int peridoId)
     {
-        return _hrContext.Transactions.Where(x=> x.PayrollId == payrollId && x.PeriodId == peridoId && x.StatusId == 1)
+        return _hrContext.Transactions.Include(x=> x.Concept)
+                                    .Where(x=> x.PayrollId == payrollId && x.PeriodId == peridoId && x.StatusId == 1)
                                     .Select(x=> new TransactionViewModel {
                                         ConceptId = x.ConceptId,
-                                        Concept = "",
+                                        Concept = x.Concept.Name,
                                         Times = x.Times,
                                         Amount = x.Amount
                                     })

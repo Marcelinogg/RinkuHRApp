@@ -16,7 +16,9 @@ namespace RinkuHRApp.Data
         {
         }
 
+        public virtual DbSet<Concept> Concepts { get; set; }
         public virtual DbSet<Employee> Employees { get; set; }
+        public virtual DbSet<EmployeeStatus> EmployeeStatuses { get; set; }
         public virtual DbSet<Period> Periods { get; set; }
         public virtual DbSet<Position> Positions { get; set; }
         public virtual DbSet<Transaction> Transactions { get; set; }
@@ -33,6 +35,18 @@ namespace RinkuHRApp.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Concept>(entity =>
+            {
+                entity.ToTable("Concepts", "Payroll");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<Employee>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
@@ -49,6 +63,24 @@ namespace RinkuHRApp.Data
                     .HasForeignKey(d => d.PositionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Employees_Positions");
+
+                entity.HasOne(d => d.Status)
+                    .WithMany(p => p.Employees)
+                    .HasForeignKey(d => d.StatusId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Employees_EmployeeStatus");
+            });
+
+            modelBuilder.Entity<EmployeeStatus>(entity =>
+            {
+                entity.ToTable("EmployeeStatus");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<Period>(entity =>
@@ -99,6 +131,12 @@ namespace RinkuHRApp.Data
                     .IsRequired()
                     .HasMaxLength(255)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.Concept)
+                    .WithMany(p => p.Transactions)
+                    .HasForeignKey(d => d.ConceptId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PayrollTransactions_PayrollConcepts");
 
                 entity.HasOne(d => d.P)
                     .WithMany(p => p.Transactions)

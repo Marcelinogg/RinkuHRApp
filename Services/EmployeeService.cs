@@ -18,11 +18,12 @@ public class EmployeeService : IEmployeeService
             Employee employee = new Employee {
                     Id = model.Id,
                     FullName = model.FullName,
+                    PositionId = model.PositionId,
                     SalaryPerHour = model.SalaryPerHour,
                     HoursPerDay = model.HoursPerDay,
                     DaysPerWeek = model.DaysPerWeek,
                     PayrollId = model.PayrollId,
-                    StatusId = model.StatusId
+                    StatusId = model.StatusId ? 1 : 2
                 };
             _hrContext.Entry(employee).State = isNew ? EntityState.Added : EntityState.Modified;
             _hrContext.SaveChanges();
@@ -32,7 +33,10 @@ public class EmployeeService : IEmployeeService
         }
     }
     public void AddNew(EmployeeViewModel model)
-    {
+    {  
+        int maxId = _hrContext.Employees.Max(x=> (int?)x.Id).GetValueOrDefault() + 1;
+        model.Id = maxId == 0 ? 1000001 : maxId;
+
         Save(model);
     }
 
@@ -44,14 +48,15 @@ public class EmployeeService : IEmployeeService
     public IEnumerable<EmployeeViewModel> GetAll(int payrollId)
     {
         return _hrContext.Employees.Include(x=> x.Position)
-                                    .Where( x=> x.PayrollId == payrollId && x.StatusId == 1)
+                                    .Where( x=> x.PayrollId == payrollId)
                                     .Select(x=> new EmployeeViewModel {
                                         Id = x.Id,
                                         FullName = x.FullName,
                                         Position = x.Position.Name,
                                         SalaryPerHour = x.SalaryPerHour,
                                         HoursPerDay = x.HoursPerDay,
-                                        DaysPerWeek = x.DaysPerWeek
+                                        DaysPerWeek = x.DaysPerWeek,
+                                        Status = x.Status.Name
                                     })
                                     .ToList();
     }
@@ -65,7 +70,9 @@ public class EmployeeService : IEmployeeService
                                         PositionId = x.PositionId,
                                         SalaryPerHour = x.SalaryPerHour,
                                         HoursPerDay = x.HoursPerDay,
-                                        DaysPerWeek = x.DaysPerWeek
+                                        DaysPerWeek = x.DaysPerWeek,
+                                        PayrollId = x.PayrollId,
+                                        StatusId = x.StatusId == 1
                                     })
                                     .First();
     }

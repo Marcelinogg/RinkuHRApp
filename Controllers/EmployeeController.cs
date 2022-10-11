@@ -24,17 +24,18 @@ public class EmployeeController : Controller
     }
 
     [HttpGet]
-    public IActionResult Employee()
+    public IActionResult Index()
     {
         ViewBag.Positions = _positionService.GetAll();
         ViewBag.Employees = _employeeService.GetAll(PAYROLL);
+        ViewBag.Action = "EmployeeNew";
 
         return View(new EmployeeViewModel(){
             SalaryPerHour = 30,
             HoursPerDay = 8,
             DaysPerWeek = 6,
             PayrollId = PAYROLL,
-            StatusId = 1
+            StatusId = true
         });
     }
 
@@ -44,8 +45,9 @@ public class EmployeeController : Controller
         EmployeeViewModel employee = _employeeService.GetOne(id);
         ViewBag.Positions = _positionService.GetAll();
         ViewBag.Employees = _employeeService.GetAll(PAYROLL);
+        ViewBag.Action = "EmployeeEdit";
 
-        return View("Employee", employee);
+        return View("Index", employee);
     }
 
     [HttpPost]
@@ -55,10 +57,12 @@ public class EmployeeController : Controller
             _employeeService.AddNew(model);
             TempData["Done"] = "Empleado agrega exitosamente";
 
-            return RedirectToAction("Employee");
+            return RedirectToAction("Index");
         }
 
-        return View("Employee", model);
+        ViewBag.Positions = _positionService.GetAll();
+        ViewBag.Employees = _employeeService.GetAll(PAYROLL);
+        return View("Index", model);
     }
 
     [HttpPost]
@@ -68,10 +72,10 @@ public class EmployeeController : Controller
             _employeeService.Edit(model);
             TempData["Done"] = "Empleado actualizado exitosamente";
             
-            return RedirectToAction("Employee");
+            return RedirectToAction("Index");
         }
 
-        return View("Employee", model);
+        return View("Index", model);
     }
 
 

@@ -10,31 +10,31 @@ public class EmployeeController : Controller
     private readonly ILogger<HomeController> _logger;
     private readonly IEmployeeService _employeeService;
     private readonly IPositionService _positionService;
-    private const int PAYROLL = 1;
+    private readonly IPayrollService _payrollService;
 
     public EmployeeController(
         ILogger<HomeController> logger,
         IEmployeeService employeeService,
-        IPositionService positionService
+        IPositionService positionService,
+        IPayrollService payrollService
         )
     {
         _logger = logger;
         _employeeService = employeeService;
         _positionService = positionService;
+        _payrollService = payrollService;
     }
 
     [HttpGet]
     public IActionResult Index()
     {
-        ViewBag.Positions = _positionService.GetAll();
-        ViewBag.Employees = _employeeService.GetAll(PAYROLL);
+        GetCatalogsToView();
         ViewBag.Action = "EmployeeNew";
 
         return View(new EmployeeViewModel(){
             SalaryPerHour = 30,
             HoursPerDay = 8,
             DaysPerWeek = 6,
-            PayrollId = PAYROLL,
             StatusId = true
         });
     }
@@ -42,9 +42,8 @@ public class EmployeeController : Controller
     [HttpGet]
     public IActionResult SearchEmployee(int id)
     {
+        GetCatalogsToView();
         EmployeeViewModel employee = _employeeService.GetOne(id);
-        ViewBag.Positions = _positionService.GetAll();
-        ViewBag.Employees = _employeeService.GetAll(PAYROLL);
         ViewBag.Action = "EmployeeEdit";
 
         return View("Index", employee);
@@ -60,8 +59,7 @@ public class EmployeeController : Controller
             return RedirectToAction("Index");
         }
 
-        ViewBag.Positions = _positionService.GetAll();
-        ViewBag.Employees = _employeeService.GetAll(PAYROLL);
+        GetCatalogsToView();
         return View("Index", model);
     }
 
@@ -76,6 +74,13 @@ public class EmployeeController : Controller
         }
 
         return View("Index", model);
+    }
+
+    private void GetCatalogsToView() {
+        IEnumerable<PayrollViewModel> payrolls = _payrollService.GetAll();
+        ViewBag.Payrolls = payrolls;
+        ViewBag.Positions = _positionService.GetAll();
+        ViewBag.Employees = _employeeService.GetAll(payrolls.First().Id);
     }
 
 

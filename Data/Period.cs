@@ -18,6 +18,7 @@ namespace RinkuHRApp.Data
         public DateTime? PaymentDate { get; set; }
         public bool Active { get; set; }
 
+        public virtual Payroll Payroll { get; set; }
         public virtual ICollection<Transaction> Transactions { get; set; }
     }
 }

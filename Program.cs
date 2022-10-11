@@ -12,6 +12,7 @@ builder.Services.AddDbContext<HumanResourcesContext>(options => options.UseSqlSe
 ));
 builder.Services.AddTransient<IEmployeeService, EmployeeService>();
 builder.Services.AddTransient<IPositionService, PositionService>();
+builder.Services.AddTransient<IPayrollService, PayrollService>();
 
 var app = builder.Build();
 

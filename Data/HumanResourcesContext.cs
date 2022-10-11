@@ -19,6 +19,7 @@ namespace RinkuHRApp.Data
         public virtual DbSet<Concept> Concepts { get; set; }
         public virtual DbSet<Employee> Employees { get; set; }
         public virtual DbSet<EmployeeStatus> EmployeeStatuses { get; set; }
+        public virtual DbSet<Payroll> Payrolls { get; set; }
         public virtual DbSet<Period> Periods { get; set; }
         public virtual DbSet<Position> Positions { get; set; }
         public virtual DbSet<Transaction> Transactions { get; set; }
@@ -28,8 +29,8 @@ namespace RinkuHRApp.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-// #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-//                 optionsBuilder.UseSqlServer("Server=LAPTOP-VAA09C66\\SQLEXPRESS;Database=dbHumanResources;Trusted_Connection=True;");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Server=LAPTOP-VAA09C66\\SQLEXPRESS;Database=dbHumanResources;Trusted_Connection=True;");
             }
         }
 
@@ -58,6 +59,12 @@ namespace RinkuHRApp.Data
 
                 entity.Property(e => e.SalaryPerHour).HasColumnType("money");
 
+                entity.HasOne(d => d.Payroll)
+                    .WithMany(p => p.Employees)
+                    .HasForeignKey(d => d.PayrollId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Employees_Payrolls");
+
                 entity.HasOne(d => d.Position)
                     .WithMany(p => p.Employees)
                     .HasForeignKey(d => d.PositionId)
@@ -83,6 +90,16 @@ namespace RinkuHRApp.Data
                     .IsUnicode(false);
             });
 
+            modelBuilder.Entity<Payroll>(entity =>
+            {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<Period>(entity =>
             {
                 entity.HasKey(e => new { e.PayrollId, e.Id })
@@ -100,6 +117,12 @@ namespace RinkuHRApp.Data
                 entity.Property(e => e.PaymentDate).HasColumnType("date");
 
                 entity.Property(e => e.StartDate).HasColumnType("date");
+
+                entity.HasOne(d => d.Payroll)
+                    .WithMany(p => p.Periods)
+                    .HasForeignKey(d => d.PayrollId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PayrollPeriods_Payrolls");
             });
 
             modelBuilder.Entity<Position>(entity =>
@@ -137,6 +160,12 @@ namespace RinkuHRApp.Data
                     .HasForeignKey(d => d.ConceptId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PayrollTransactions_PayrollConcepts");
+
+                entity.HasOne(d => d.Payroll)
+                    .WithMany(p => p.Transactions)
+                    .HasForeignKey(d => d.PayrollId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PayrollTransactions_Payrolls");
 
                 entity.HasOne(d => d.P)
                     .WithMany(p => p.Transactions)

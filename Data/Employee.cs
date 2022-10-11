@@ -14,6 +14,7 @@ namespace RinkuHRApp.Data
         public int PayrollId { get; set; }
         public int StatusId { get; set; }
 
+        public virtual Payroll Payroll { get; set; }
         public virtual Position Position { get; set; }
         public virtual EmployeeStatus Status { get; set; }
     }

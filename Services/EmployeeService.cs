@@ -13,6 +13,23 @@ public class EmployeeService : IEmployeeService
         _hrContext = hrContext;
     }
 
+    private IEnumerable<EmployeeViewModel> GetData(int payrollId, bool onlyActive = false)
+    {
+        return _hrContext.Employees.Include(x=> x.Position)
+                                    .Where( x=> x.PayrollId == payrollId 
+                                                && ((onlyActive && x.StatusId == 1) || !onlyActive))
+                                    .Select(x=> new EmployeeViewModel {
+                                        Id = x.Id,
+                                        FullName = x.FullName,
+                                        Position = x.Position.Name,
+                                        SalaryPerHour = x.SalaryPerHour,
+                                        HoursPerDay = x.HoursPerDay,
+                                        DaysPerWeek = x.DaysPerWeek,
+                                        Status = x.Status.Name
+                                    })
+                                    .ToList();
+    }
+
     private void Save(EmployeeViewModel model, bool isNew = true) {
         try {
             Employee employee = new Employee {
@@ -45,20 +62,14 @@ public class EmployeeService : IEmployeeService
          Save(model, false);
     }
 
+    public IEnumerable<EmployeeViewModel> GetAllActives(int payrollId)
+    {
+        return GetData(payrollId, true);
+    }
+
     public IEnumerable<EmployeeViewModel> GetAll(int payrollId)
     {
-        return _hrContext.Employees.Include(x=> x.Position)
-                                    .Where( x=> x.PayrollId == payrollId)
-                                    .Select(x=> new EmployeeViewModel {
-                                        Id = x.Id,
-                                        FullName = x.FullName,
-                                        Position = x.Position.Name,
-                                        SalaryPerHour = x.SalaryPerHour,
-                                        HoursPerDay = x.HoursPerDay,
-                                        DaysPerWeek = x.DaysPerWeek,
-                                        Status = x.Status.Name
-                                    })
-                                    .ToList();
+        return GetData(payrollId);
     }
 
     public EmployeeViewModel GetOne(int employeeId)

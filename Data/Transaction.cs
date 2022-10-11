@@ -17,5 +17,6 @@ namespace RinkuHRApp.Data
 
         public virtual Concept Concept { get; set; }
         public virtual Period P { get; set; }
+        public virtual Payroll Payroll { get; set; }
     }
 }

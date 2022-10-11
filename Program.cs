@@ -5,11 +5,16 @@ using RinkuHRApp.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews()
-                .AddDataAnnotationsLocalization();
+builder.Services.AddControllersWithViews();
+builder.Services.AddDistributedMemoryCache(); // Adds a default in-memory implementation of IDistributedCache
+builder.Services.AddSession(options => {
+    options.IdleTimeout = TimeSpan.FromMinutes(20);
+    options.Cookie.IsEssential = true;
+});
 builder.Services.AddDbContext<HumanResourcesContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("DefaultConnection")
 ));
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddTransient<IEmployeeService, EmployeeService>();
 builder.Services.AddTransient<IPositionService, PositionService>();
 builder.Services.AddTransient<IPayrollService, PayrollService>();
@@ -33,8 +38,10 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+app.UseSession();
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Employee}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=PayrollSelect}/{id?}");
 
 app.Run();

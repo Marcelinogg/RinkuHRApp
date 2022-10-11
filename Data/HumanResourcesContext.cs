@@ -199,6 +199,10 @@ namespace RinkuHRApp.Data
                     .HasMaxLength(255)
                     .IsUnicode(false);
 
+                entity.Property(e => e.PositionName)
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.TypeConcept)
                     .IsRequired()
                     .HasMaxLength(255)

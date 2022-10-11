@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RinkuHRApp.Models;
 using RinkuHRApp.Services;
@@ -7,27 +6,28 @@ namespace RinkuHRApp.Controllers
 {
     public class TransactionController : Controller
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private ISession _session => _httpContextAccessor.HttpContext.Session;
         private readonly ILogger<TransactionController> _logger;
-        private readonly IPayrollService _payrollService;
-        private readonly IPeriodService _periodService;
+        
         private readonly IEmployeeService _employeeService;
         private readonly ITransactionService _transactionService;
-        private readonly int PAYROLL;
+        private readonly PayrollSelectionViewModel _payrollSelected;
 
         public TransactionController(
+            IHttpContextAccessor httpContextAccessor,
             ILogger<TransactionController> logger,
-            IPayrollService payrollService,
-            IPeriodService periodService,
             IEmployeeService employeeService,
             ITransactionService transactionService
         )
         {
+            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
-            _payrollService = payrollService;
-            _periodService = periodService;
             _employeeService = employeeService;
             _transactionService = transactionService;
-            PAYROLL =  _payrollService.GetAll().First().Id;
+           _payrollSelected =  _employeeService.FromJSONStringToObject<PayrollSelectionViewModel>(
+                _session.GetString("PayrollSelected")
+            );
         }
 
         [HttpGet]
@@ -35,6 +35,8 @@ namespace RinkuHRApp.Controllers
         {
             GetCatalogsToView();
             return View(new TransactionViewModel(){
+                PayrollId = _payrollSelected.PayrollId,
+                PeriodId = _payrollSelected.PeriodId,
                 ConceptId = 2,
                 Amount = 5.00M
             });
@@ -79,21 +81,12 @@ namespace RinkuHRApp.Controllers
 
         private void GetCatalogsToView(string action =  "NewTransaction")
         {
-            ViewBag.Payrolls = _payrollService.GetAll();
-            IEnumerable<PeriodViewModel> periods = _periodService.GetAllActives(PAYROLL);
-            ViewBag.Periods = periods;
-            IEnumerable<EmployeeViewModel> employees = _employeeService.GetAllActives(PAYROLL);
+            IEnumerable<EmployeeViewModel> employees = _employeeService.GetAllActives(_payrollSelected.PayrollId);
             ViewBag.Employees = employees;
-            ViewBag.EmployeesStr = _employeeService.SerializeAllActives(employees);
-            ViewBag.Transactions = _transactionService.GetAllActives(PAYROLL, periods.First().Id);
+            ViewBag.EmployeesStr = _employeeService.ToJSONString<IEnumerable<EmployeeViewModel>>(employees);
+            ViewBag.Transactions = _transactionService.GetAllActives(_payrollSelected.PayrollId, _payrollSelected.PeriodId);
             ViewBag.Action = action;
-        }
-
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            TempData["PayrollLabel"] = _payrollSelected.Payroll;
         }
     }
 }

@@ -9,5 +9,6 @@ public interface IEmployeeService
     IEnumerable<EmployeeViewModel> GetAllActives(int payrollId);
     void AddNew(EmployeeViewModel model);
     void Edit(EmployeeViewModel model);
-    string SerializeAllActives(IEnumerable<EmployeeViewModel> employees);
+    string ToJSONString<T>(T model);
+    T FromJSONStringToObject<T>(string model);
 }

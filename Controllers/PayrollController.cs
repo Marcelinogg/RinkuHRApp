@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RinkuHRApp.Models;
 using RinkuHRApp.Services;
@@ -7,66 +6,49 @@ namespace RinkuHRApp.Controllers
 {
     public class PayrollController : Controller
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private ISession _session => _httpContextAccessor.HttpContext.Session;
         private readonly ILogger<PayrollController> _logger;
+
         private readonly IPayrollService _payrollService;
-        private readonly IPeriodService _periodService;
         private readonly IEmployeeService _employeeService;
-        private readonly int PAYROLL;
+        private readonly PayrollSelectionViewModel _payrollSelected;
 
         public PayrollController(
+            IHttpContextAccessor httpContextAccessor,
             ILogger<PayrollController> logger,
             IPayrollService payrollService,
-            IPeriodService periodService,
             IEmployeeService employeeService
         )
         {
+            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
             _payrollService = payrollService;
-            _periodService = periodService;
             _employeeService = employeeService;
-            PAYROLL =  _payrollService.GetAll().First().Id;
+            _payrollSelected =  _employeeService.FromJSONStringToObject<PayrollSelectionViewModel>(
+                _session.GetString("PayrollSelected")
+            );
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            GetCatalogsToView();
-            return View(new PayrollCalculationViewModel());
+            ViewBag.Employees = _employeeService.GetAllActives(_payrollSelected.PayrollId);
+            ViewBag.PayrollConcepts = _payrollService.GetPayrollConcepts(
+                _payrollSelected.PayrollId,
+                _payrollSelected.PeriodId
+            );
+            TempData["PayrollLabel"] = _payrollSelected.Payroll;
+
+            return View();
         }
 
         [HttpPost]
-        public IActionResult Index(PayrollCalculationViewModel model)
+        public IActionResult Index(string employeeId)
         {
-            if(ModelState.IsValid) {
-                _payrollService.RunPayroll(model);
-                TempData["Done"] = "Nómina procesada exitosamente";
+            TempData["rowsAffected"] = _payrollService.RunPayroll(_payrollSelected.PayrollId, _payrollSelected.PeriodId, employeeId);
                 
-                return RedirectToAction("Index");
-            }
-            
-            GetCatalogsToView();
-
-            return View(new PayrollCalculationViewModel());
-        }
-
-        private void GetCatalogsToView()
-        {
-            ViewBag.Payrolls = _payrollService.GetAll();
-            IEnumerable<PeriodViewModel> periods = _periodService.GetAllActives(PAYROLL);
-            ViewBag.Periods = periods;
-            ViewBag.Employees = _employeeService.GetAllActives(PAYROLL);
-            ViewBag.PayrollConcepts = _payrollService.GetPayrollConcepts(new PayrollCalculationViewModel(){
-                PayrollId = PAYROLL,
-                PeriodId = periods.First().Id
-            }
-            );
-        }
-
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return RedirectToAction("Index");
         }
     }
 }

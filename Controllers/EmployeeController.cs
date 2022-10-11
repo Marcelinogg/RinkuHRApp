@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RinkuHRApp.Models;
 using RinkuHRApp.Services;
@@ -7,24 +6,29 @@ namespace RinkuHRApp.Controllers;
 
 public class EmployeeController : Controller
 {
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private ISession _session => _httpContextAccessor.HttpContext.Session;
     private readonly ILogger<EmployeeController> _logger;
+    
     private readonly IEmployeeService _employeeService;
     private readonly IPositionService _positionService;
-    private readonly IPayrollService _payrollService;
-    private readonly int PAYROLL;
+    private readonly PayrollSelectionViewModel _payrollSelected;
 
     public EmployeeController(
+        IHttpContextAccessor httpContextAccessor,
         ILogger<EmployeeController> logger,
         IEmployeeService employeeService,
         IPositionService positionService,
         IPayrollService payrollService
         )
     {
+        _httpContextAccessor = httpContextAccessor;
         _logger = logger;
         _employeeService = employeeService;
         _positionService = positionService;
-        _payrollService = payrollService;
-        PAYROLL =  _payrollService.GetAll().First().Id;
+        _payrollSelected =  _employeeService.FromJSONStringToObject<PayrollSelectionViewModel>(
+            _session.GetString("PayrollSelected")
+        );
     }
 
     [HttpGet]
@@ -35,6 +39,7 @@ public class EmployeeController : Controller
             SalaryPerHour = 30,
             HoursPerDay = 8,
             DaysPerWeek = 6,
+            PayrollId = _payrollSelected.PayrollId,
             StatusId = true
         });
     }
@@ -76,17 +81,11 @@ public class EmployeeController : Controller
         return View("Index", model);
     }
     
-    private void GetCatalogsToView(string action = "NewEmployee") {
-        ViewBag.Payrolls = _payrollService.GetAll();
-        ViewBag.Positions = _positionService.GetAll();
-        ViewBag.Employees = _employeeService.GetAll(PAYROLL);
-        ViewBag.Action = action;
-    }
-
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
+    private void GetCatalogsToView(string action = "NewEmployee")
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        ViewBag.Positions = _positionService.GetAll();
+        ViewBag.Employees = _employeeService.GetAll(_payrollSelected.PayrollId);
+        ViewBag.Action = action;
+        TempData["PayrollLabel"] = _payrollSelected.Payroll;
     }
 }

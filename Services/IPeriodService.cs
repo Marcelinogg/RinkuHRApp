@@ -4,5 +4,7 @@ namespace RinkuHRApp.Services;
 
 public interface IPeriodService
 {
-    IEnumerable<PeriodViewModel> GetAllActives(int payrollId);
+    string ToJSONString<T>(T model);
+    // T ToObject<T>(T model);
+    IEnumerable<PeriodViewModel> GetAllActives();
 }

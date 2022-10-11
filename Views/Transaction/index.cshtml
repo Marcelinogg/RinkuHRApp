@@ -9,26 +9,10 @@
     <div class="row">
         <div class="card">
             <div class="card-body">
-                <div class="col-sm-12">
+                <div class="col-md-12">
                     <h5>CAPTURA MOVIMIENTO - PAGO X ENTREGA</h5>
                     <form method="post" asp-action="@ViewBag.Action" class="row g-3">
                         <div asp-validation-summary="All"></div>
-
-                        <div class="form-group col-md-3">
-                            <label asp-for="PayrollId">Nómina</label>
-                            <select class="form-select mb-3" asp-for="PayrollId"
-                                asp-items="@(new SelectList(ViewBag.Payrolls, "Id", "Name"))">
-                            </select>
-                            <span asp-validation-for="PayrollId" class=" alert-danger"></span>
-                        </div>
-
-                        <div class="form-group col-md-3">
-                            <label asp-for="PeriodId">Período</label>
-                            <select class="form-select mb-3" asp-for="PeriodId"
-                                asp-items="@(new SelectList(ViewBag.Periods, "Id", "Name"))">
-                            </select>
-                            <span asp-validation-for="PeriodId" class=" alert-danger"></span>
-                        </div>
 
                         <div class="form-group col-md-6">
                             <label for="EmployeesSelect">Empleados</label>
@@ -60,10 +44,12 @@
                             <span asp-validation-for="Times" class=" alert-danger"></span>
                         </div>
 
-                         <input type="hidden" asp-for="ConceptId">
-                         <input type="hidden" asp-for="Sequence">
+                        <input type="hidden" asp-for="PayrollId">
+                        <input type="hidden" asp-for="PeriodId">
+                        <input type="hidden" asp-for="ConceptId">
+                        <input type="hidden" asp-for="Sequence">
 
-                        <div class="col-12 text-center">
+                        <div class="col-md-12 text-center">
                             <button type="submit" class="btn btn-lg btn-primary"><i
                                     class="bi bi-file-plus-fill"></i>Guardar</button>
                         </div>
@@ -74,17 +60,18 @@
     </div>
     <hr>
     <div class="row">
-        <div class="col-sm-12">
-            <table class="table table-bordered table-hover">
+        <div class="col-md-12">
+            <table class="table table-bordered table-hover table-sm">
                 <thead>
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col"># ID</th>
                         <th scope="col">Nombre</th>
+                        <th scope="col">Puesto</th>
                         <th scope="col">ID Concepto</th>
                         <th scope="col">Concepto</th>
-                        <th scope="col">Entregas</th>
                         <th scope="col">Pago x hora</th>
+                        <th scope="col">Entregas</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -102,17 +89,20 @@
                             <td width="30%">
                                 @item.EmployeeFullName
                             </td>
+                            <td width="20%">
+                                @item.PositonName
+                            </td>
                             <td width="5%">
                                 @item.ConceptId
                             </td>
-                            <td width="20%">
+                            <td width="10%">
                                 @item.Concept
                             </td>
                             <td width="5%">
-                                @item.Times
+                                @item.Amount
                             </td>
                             <td width="5%">
-                                @item.Amount
+                                @item.Times
                             </td>
                             <td>
                                 <div role="group" class="w-60 btn-group">
@@ -132,9 +122,10 @@
     </div>
 </div>
 <script>
-    function setValues(event) {        
-        var employeeslist = JSON.parse(event.target.dataset.employeeslist);
-        var employee = employeeslist.find(x => x.Id == String(event.target.value));
+    function setValues(event) {  
+        let select = event.target;      
+        let employeeslist = JSON.parse(select.dataset.employeeslist);
+        let employee = employeeslist.find(x => x.Id == String(select.value));
 
         document.querySelector("#EmployeeId").value = employee.Id;
         document.querySelector("#EmployeeFullName").value = employee.FullName;

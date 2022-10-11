@@ -7,6 +7,8 @@ namespace RinkuHRApp.Data
     {
         public int? EmployeeId { get; set; }
         public string EmployeeFullName { get; set; }
+        public int? PositionId { get; set; }
+        public string PositionName { get; set; }
         public int PayrollId { get; set; }
         public int PeriodId { get; set; }
         public int ConceptId { get; set; }

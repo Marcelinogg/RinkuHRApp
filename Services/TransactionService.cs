@@ -64,12 +64,14 @@ public class TransactionService : ITransactionService
     {
         return _hrContext.Transactions.Include(x=> x.Concept)
                                     .Include(x=> x.Employee)
+                                    .Include(x=> x.Employee.Position)
                                     .Where(x=> x.PayrollId == payrollId && x.PeriodId == peridoId && x.StatusId == 1)
                                     .Select(x=> new TransactionViewModel {
                                         PayrollId = x.PayrollId,
                                         PeriodId = x.PeriodId,
                                         EmployeeId = x.EmployeeId,
                                         EmployeeFullName = x.Employee.FullName,
+                                        PositonName = x.Employee.Position.Name,
                                         Sequence = x.Sequence,
                                         ConceptId = x.ConceptId,
                                         Concept = x.Concept.Name,

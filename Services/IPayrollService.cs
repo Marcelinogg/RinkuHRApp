@@ -5,6 +5,6 @@ namespace RinkuHRApp.Services;
 public interface IPayrollService
 {
     IEnumerable<PayrollViewModel> GetAll();
-    IEnumerable<PayrollConceptViewModel> GetPayrollConcepts(PayrollCalculationViewModel model);
-    int RunPayroll(PayrollCalculationViewModel model);
+    IEnumerable<PayrollConceptViewModel> GetPayrollConcepts(int payrollId, int periodId);
+    int RunPayroll(int payrollId, int periodId, string employeeId);
 }

@@ -1,0 +1,60 @@
+﻿@model PayrollSelectionViewModel
+
+<div class="container">
+    <br>
+    <br>
+    <br>
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <div class="card">
+                <h5 class="card-header">&nbsp;&nbsp;</h5>
+                <div class="card-body">
+                    <form method="post" asp-action="PayrollSelect" class="row g-3">
+                        @* <div asp-validation-summary="All"></div> *@
+
+                        <div class="form-group col-md-12">
+                            <h5 class="card-title">Nómina</h5>
+                            <select class="form-select mb-3" asp-for="PayrollId"
+                                asp-items="@(new SelectList(ViewBag.Payrolls, "Id", "Name"))"
+                                onchange="setValues(event)" data-periodslist="@ViewBag.PeriodsStr">
+                                <option value="">-- Selecciona --</option>
+                            </select>
+                            <span asp-validation-for="PayrollId" class=" alert-danger"></span>
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <h5 class="card-title">Período</h5>
+                            <select class="form-select mb-3" asp-for="PeriodId">
+                                <option value="">--</option>
+                            </select>
+                            <span asp-validation-for="PeriodId" class=" alert-danger"></span>
+                        </div>
+
+                        <input type="hidden" asp-for="Payroll">
+
+                        <div class="col-md-12 text-center">
+                            <button type="submit" class="btn btn-lg btn-primary"><i
+                                    class="bi bi-file-plus-fill"></i>Continuar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+</div>
+<script>
+    function setValues(event) {       
+        let select = event.target;
+        let periodslist = JSON.parse(select.dataset.periodslist);
+        let periodsByPayroll = periodslist.filter(x => x.PayrollId == String(select.value));
+        
+        let options = periodsByPayroll.map(x=> 
+        '<option value="' + x.Id +'">' + x.Name + '</option>'
+        ).join('\n');
+
+        document.querySelector("#PeriodId").innerHTML = options;
+        document.querySelector("#Payroll").value = select.options[select.selectedIndex].text;
+    }
+</script>

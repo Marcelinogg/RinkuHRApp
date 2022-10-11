@@ -66,9 +66,14 @@ public class EmployeeService : IEmployeeService
          Save(model, false);
     }
 
-    public string SerializeAllActives(IEnumerable<EmployeeViewModel> employees)
+    public string ToJSONString<T>(T model)
     {
-        return JsonSerializer.Serialize(employees);
+        return JsonSerializer.Serialize<T>(model);
+    }
+
+    public T FromJSONStringToObject<T>(string model)
+    {
+        return JsonSerializer.Deserialize<T>(model);
     }
 
     public IEnumerable<EmployeeViewModel> GetAllActives(int payrollId)

@@ -14,6 +14,7 @@ public class EmployeeService : IEmployeeService
         _hrContext = hrContext;
     }
 
+    // Internal method to data access (take all employess o just active employees)
     private IEnumerable<EmployeeViewModel> GetData(int payrollId, bool onlyActive = false)
     {
         return _hrContext.Employees.Include(x=> x.Position)
@@ -55,8 +56,9 @@ public class EmployeeService : IEmployeeService
     }
     public void AddNew(EmployeeViewModel model)
     {  
+        // Set the ID to the employee (the minimum ID si 1000001)
         int maxId = _hrContext.Employees.Max(x=> (int?)x.Id).GetValueOrDefault() + 1;
-        model.Id = maxId == 0 ? 1000001 : maxId;
+        model.Id = maxId == 0 ? 10000001 : maxId;
 
         Save(model);
     }
@@ -66,11 +68,13 @@ public class EmployeeService : IEmployeeService
          Save(model, false);
     }
 
+    // Comverts Object to string
     public string ToJSONString<T>(T model)
     {
         return JsonSerializer.Serialize<T>(model);
     }
 
+    // Converts Json string into its representative object
     public T FromJSONStringToObject<T>(string model)
     {
         return JsonSerializer.Deserialize<T>(model);
@@ -86,6 +90,7 @@ public class EmployeeService : IEmployeeService
         return GetData(payrollId);
     }
 
+    // Data access for an object by ID
     public EmployeeViewModel GetOne(int employeeId)
     {
         return _hrContext.Employees.Where( x=> x.Id == employeeId)

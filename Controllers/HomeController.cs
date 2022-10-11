@@ -23,7 +23,7 @@ public class HomeController : Controller
         _periodService = periodService;
     }
 
-
+     // The initial  method, when the payroll is selected then is redirected to principal view
     [HttpGet]
     public IActionResult PayrollSelect()
     {
@@ -34,9 +34,8 @@ public class HomeController : Controller
     [HttpPost]
     public IActionResult PayrollSelect(PayrollSelectionViewModel model)
     {
-        if(ModelState.IsValid) {
+        if(ModelState.IsValid) {                                    // Converts object to string to be saved
             HttpContext.Session.SetString("PayrollSelected", _periodService.ToJSONString<PayrollSelectionViewModel>(model));
-            string x = HttpContext.Session.GetString("PayrollSelected");
             return RedirectToAction("Index", "Employee");
         }
 
@@ -46,8 +45,8 @@ public class HomeController : Controller
 
     private void GetCatalogsToView() 
     {
-        ViewBag.Payrolls = _payrollService.GetAll();
-        ViewBag.PeriodsStr = _periodService.ToJSONString<IEnumerable<PeriodViewModel>>(
+        ViewBag.Payrolls = _payrollService.GetAll();                // Retrieve data from the payroll catalog
+        ViewBag.PeriodsStr = _periodService.ToJSONString<IEnumerable<PeriodViewModel>>(     // The retrieve data is converted in string to be used to the view
             _periodService.GetAllActives()
         );
     }

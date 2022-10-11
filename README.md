@@ -1,3 +1,8 @@
+### SPECIFICATIONS
+a. IDE's and tools used: Visual Studio Code, SQL Server Management Studio 15.18
+b. Programming languages, frameworks and versions used: C#, .Net 6 (dotnet), Entity Framework Core 6
+c. Implemented architecture: Model View Controller
+
 ### LOAD DATA WITH ENTITYFRAMEWORK CORE
 
 Add the next packages: 

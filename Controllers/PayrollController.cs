@@ -33,8 +33,8 @@ namespace RinkuHRApp.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            ViewBag.Employees = _employeeService.GetAllActives(_payrollSelected.PayrollId);
-            ViewBag.PayrollConcepts = _payrollService.GetPayrollConcepts(
+            ViewBag.Employees = _employeeService.GetAllActives(_payrollSelected.PayrollId);     // Retrieve data from the active employee catalog by payroll
+            ViewBag.PayrollConcepts = _payrollService.GetPayrollConcepts(                       // Retrieve data from the calculated payroll by period
                 _payrollSelected.PayrollId,
                 _payrollSelected.PeriodId
             );
@@ -43,6 +43,7 @@ namespace RinkuHRApp.Controllers
             return View();
         }
 
+        // This method calls the main process to calculate payroll
         [HttpPost]
         public IActionResult Index(string employeeId)
         {

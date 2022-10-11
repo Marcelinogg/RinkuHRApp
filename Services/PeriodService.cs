@@ -14,6 +14,7 @@ public class PeriodService : IPeriodService
         _hrContext = hrContext;
     }
 
+    // Internal method to data access (take all periods o just active periods)
     private IEnumerable<PeriodViewModel> GetData(bool onlyActive = false)
     {
         return _hrContext.Periods.Where( x=> (onlyActive && x.Active) || !onlyActive)

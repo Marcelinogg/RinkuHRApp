@@ -35,7 +35,7 @@ public class EmployeeController : Controller
     public IActionResult Index()
     {
         GetCatalogsToView();
-        return View(new EmployeeViewModel(){
+        return View(new EmployeeViewModel(){                // Creates a default object to the view
             SalaryPerHour = 30,
             HoursPerDay = 8,
             DaysPerWeek = 6,
@@ -44,6 +44,7 @@ public class EmployeeController : Controller
         });
     }
 
+    // Search a employee by ID
     [HttpGet]
     public IActionResult SearchEmployee(int id)
     {
@@ -81,11 +82,12 @@ public class EmployeeController : Controller
         return View("Index", model);
     }
     
+    // This method is used to avoid repetitive data
     private void GetCatalogsToView(string action = "NewEmployee")
     {
-        ViewBag.Positions = _positionService.GetAll();
-        ViewBag.Employees = _employeeService.GetAll(_payrollSelected.PayrollId);
-        ViewBag.Action = action;
+        ViewBag.Positions = _positionService.GetAll();                                  // Retrieve data from the positon catalog
+        ViewBag.Employees = _employeeService.GetAll(_payrollSelected.PayrollId);        // Retrieve data from the employee catalog by payroll
+        ViewBag.Action = action;                                                        // It is the form action
         TempData["PayrollLabel"] = _payrollSelected.Payroll;
     }
 }

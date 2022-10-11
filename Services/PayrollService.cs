@@ -14,6 +14,7 @@ public class PayrollService : IPayrollService
         _hrContext = hrContext;
     }
 
+    // Data access take all payrolls
     public IEnumerable<PayrollViewModel> GetAll()
     {
         return _hrContext.Payrolls.Select(x=> new PayrollViewModel {
@@ -23,6 +24,7 @@ public class PayrollService : IPayrollService
                                     .ToList();
     }
 
+    // Data access take all calculated payroll by period
     public IEnumerable<PayrollConceptViewModel> GetPayrollConcepts(int payrollId, int periodId)
     {
         return _hrContext.VwPayrollConcepts.Where(x=> x.PayrollId == payrollId && x.PeriodId == periodId)
@@ -38,6 +40,7 @@ public class PayrollService : IPayrollService
                                            .ToList();
     }
 
+    // Call the stored procedure "Payroll.CalculateSalary" to process the payroll
     public int RunPayroll(int payrollId, int periodId, string employeeId)
     {
         string query = "Exec Payroll.CalculateSalary @PayrollId, @PeriodId,	@EmployeeIds";

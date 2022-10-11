@@ -34,7 +34,7 @@ namespace RinkuHRApp.Controllers
         public IActionResult Index()
         {
             GetCatalogsToView();
-            return View(new TransactionViewModel(){
+            return View(new TransactionViewModel(){                 // Creates a default object to the view
                 PayrollId = _payrollSelected.PayrollId,
                 PeriodId = _payrollSelected.PeriodId,
                 ConceptId = 2,
@@ -42,6 +42,7 @@ namespace RinkuHRApp.Controllers
             });
         }
 
+        // Search a transaction capture by IDs
         [HttpGet]
         public IActionResult SearchTransaction(int payrollId, int periodId, int conceptId, int employeeId, int sequence)
         {
@@ -79,13 +80,14 @@ namespace RinkuHRApp.Controllers
             return View("Index", model);
         }
 
+        // This method is used to avoid repetitive data
         private void GetCatalogsToView(string action =  "NewTransaction")
         {
-            IEnumerable<EmployeeViewModel> employees = _employeeService.GetAllActives(_payrollSelected.PayrollId);
+            IEnumerable<EmployeeViewModel> employees = _employeeService.GetAllActives(_payrollSelected.PayrollId);              // Retrieve data from the employee catalog by payroll
             ViewBag.Employees = employees;
-            ViewBag.EmployeesStr = _employeeService.ToJSONString<IEnumerable<EmployeeViewModel>>(employees);
-            ViewBag.Transactions = _transactionService.GetAllActives(_payrollSelected.PayrollId, _payrollSelected.PeriodId);
-            ViewBag.Action = action;
+            ViewBag.EmployeesStr = _employeeService.ToJSONString<IEnumerable<EmployeeViewModel>>(employees);                    // The retrieve data is converted in string to be used to the view
+            ViewBag.Transactions = _transactionService.GetAllActives(_payrollSelected.PayrollId, _payrollSelected.PeriodId);    // retrieves data from active transaction captures
+            ViewBag.Action = action;                                                                                            // It is the form action
             TempData["PayrollLabel"] = _payrollSelected.Payroll;
         }
     }

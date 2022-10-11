@@ -34,8 +34,9 @@ public class TransactionService : ITransactionService
             throw;
         }
     }
+
     public void AddNew(TransactionViewModel model)
-    {
+    {   // Set the missing properties, the sequence increase with each capture
         model.UserId = "App User";
         model.CreatedDate = DateTime.Now;
         model.StatusId = 1;
@@ -46,13 +47,15 @@ public class TransactionService : ITransactionService
     }
 
     public void Edit(TransactionViewModel model)
-    {
-       if(model.Sequence == 0) {
-        AddNew(model);
+    {   
+        // When the object has a sequence with value zero I call the method to create a new object,
+        // Happens when the object was selected to edit but the user changes the list object to new employees
+        if(model.Sequence == 0) {
+            AddNew(model);
+            return;
+        }
 
-        return;
-       }
-
+         // Set the missing properties
         model.UserId = "App User";
         model.CreatedDate = DateTime.Now;
         model.StatusId = 1;
@@ -60,6 +63,7 @@ public class TransactionService : ITransactionService
         Save(model, false);
     }
 
+    // Data access take all active transaction captures
     public IEnumerable<TransactionViewModel> GetAllActives(int payrollId, int peridoId)
     {
         return _hrContext.Transactions.Include(x=> x.Concept)
@@ -81,6 +85,7 @@ public class TransactionService : ITransactionService
                                     .ToList();
     }
 
+    // Data access for an object by IDs
     public TransactionViewModel GetOne(int payrollId, int peridoId, int conceptId, int employeeId, int sequence)
     {
         return _hrContext.Transactions.Include(x=> x.Employee)

@@ -12,6 +12,7 @@ public class PositionService : IPositionService
         _hrContext = hrContext;
     }
 
+    // Data access take all positons
     public IEnumerable<PositionViewModel> GetAll()
     {
         return _hrContext.Positions.Select(x=> new PositionViewModel {

@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using RinkuHRApp.Filters;
 using RinkuHRApp.Models;
 using RinkuHRApp.Services;
 
 namespace RinkuHRApp.Controllers;
 
+[CheckSelectedPayrollAtribute]
 public class EmployeeController : Controller
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -12,7 +14,7 @@ public class EmployeeController : Controller
     
     private readonly IEmployeeService _employeeService;
     private readonly IPositionService _positionService;
-    private readonly PayrollSelectionViewModel _payrollSelected;
+    private readonly PayrollSelectionViewModel _selectedPayroll;
 
     public EmployeeController(
         IHttpContextAccessor httpContextAccessor,
@@ -26,8 +28,8 @@ public class EmployeeController : Controller
         _logger = logger;
         _employeeService = employeeService;
         _positionService = positionService;
-        _payrollSelected =  _employeeService.FromJSONStringToObject<PayrollSelectionViewModel>(
-            _session.GetString("PayrollSelected")
+        _selectedPayroll =  _employeeService.FromJSONStringToObject<PayrollSelectionViewModel>(
+            _session.GetString("SelectedPayroll")
         );
     }
 
@@ -39,7 +41,7 @@ public class EmployeeController : Controller
             SalaryPerHour = 30,
             HoursPerDay = 8,
             DaysPerWeek = 6,
-            PayrollId = _payrollSelected.PayrollId,
+            PayrollId = _selectedPayroll.PayrollId,
             StatusId = true
         });
     }
@@ -86,8 +88,8 @@ public class EmployeeController : Controller
     private void GetCatalogsToView(string action = "NewEmployee")
     {
         ViewBag.Positions = _positionService.GetAll();                                  // Retrieve data from the positon catalog
-        ViewBag.Employees = _employeeService.GetAll(_payrollSelected.PayrollId);        // Retrieve data from the employee catalog by payroll
+        ViewBag.Employees = _employeeService.GetAll(_selectedPayroll.PayrollId);        // Retrieve data from the employee catalog by payroll
         ViewBag.Action = action;                                                        // It is the form action
-        TempData["PayrollLabel"] = _payrollSelected.Payroll;
+        TempData["PayrollLabel"] = _selectedPayroll.Payroll;
     }
 }

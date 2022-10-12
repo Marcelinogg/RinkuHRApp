@@ -32,8 +32,20 @@ public class PeriodService : IPeriodService
         return GetData(true);
     }
 
+    // Comverts Object to string
     public string ToJSONString<T>(T model)
     {
         return JsonSerializer.Serialize<T>(model);
+    }
+
+     // Converts Json string into its representative object
+    public T FromJSONStringToObject<T>(string model)
+    {
+        // To avoid error when filter is used on whole controller
+        if(model != null) {
+            return JsonSerializer.Deserialize<T>(model);
+        }
+
+        return default(T);
     }
 }

@@ -1,7 +1,10 @@
 ﻿@model PayrollSelectionViewModel
 
 <div class="container">
-    <br>
+    @if (TempData["UnselectedPayroll"] != null)
+    {
+        <div class="alert alert-warning" role="alert">@TempData["UnselectedPayroll"]</div>
+    }
     <br>
     <br>
     <div class="row">

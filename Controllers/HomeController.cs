@@ -10,6 +10,7 @@ public class HomeController : Controller
     private readonly ILogger<HomeController> _logger;
     private readonly IPayrollService _payrollService;
     private readonly IPeriodService _periodService;
+    private readonly IEmployeeService _employeeService;
 
 
     public HomeController(
@@ -35,7 +36,7 @@ public class HomeController : Controller
     public IActionResult PayrollSelect(PayrollSelectionViewModel model)
     {
         if(ModelState.IsValid) {                                    // Converts object to string to be saved
-            HttpContext.Session.SetString("PayrollSelected", _periodService.ToJSONString<PayrollSelectionViewModel>(model));
+            HttpContext.Session.SetString("SelectedPayroll", _periodService.ToJSONString<PayrollSelectionViewModel>(model));
             return RedirectToAction("Index", "Employee");
         }
 
@@ -49,6 +50,11 @@ public class HomeController : Controller
         ViewBag.PeriodsStr = _periodService.ToJSONString<IEnumerable<PeriodViewModel>>(     // The retrieve data is converted in string to be used to the view
             _periodService.GetAllActives()
         );
+        PayrollSelectionViewModel selectedPayroll = _periodService.FromJSONStringToObject<PayrollSelectionViewModel>(HttpContext.Session.GetString("SelectedPayroll"));
+        
+        if(selectedPayroll != null) {
+            TempData["PayrollLabel"] = selectedPayroll.Payroll;
+        }
     }
 
 

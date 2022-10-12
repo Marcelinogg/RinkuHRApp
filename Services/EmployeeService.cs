@@ -77,7 +77,12 @@ public class EmployeeService : IEmployeeService
     // Converts Json string into its representative object
     public T FromJSONStringToObject<T>(string model)
     {
-        return JsonSerializer.Deserialize<T>(model);
+        // To avoid error when filter is used on whole controller
+        if(model != null) {
+            return JsonSerializer.Deserialize<T>(model);
+        }
+
+        return default(T);
     }
 
     public IEnumerable<EmployeeViewModel> GetAllActives(int payrollId)
